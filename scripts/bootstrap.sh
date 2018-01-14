@@ -54,6 +54,7 @@ function setup_database() {
 
         echo "  creating openlibrary database"
         sudo -u $OL_USER createdb openlibrary
+        sudo -u $OL_USER psql openlibrary < $OL_ROOT/openlibrary/core/schema.sql
         sudo -u $OL_USER createdb coverstore
         sudo -u $OL_USER psql coverstore < $OL_ROOT/openlibrary/coverstore/schema.sql
 
