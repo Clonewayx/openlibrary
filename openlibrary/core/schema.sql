@@ -35,3 +35,7 @@ CREATE TABLE bookshelves_votes (
     created timestamp without time zone default (current_timestamp at time zone 'utc'),
     primary key (username, bookshelf_id)
 );
+
+insert into bookshelves (name, description) values ('Want to Read', 'A list of books I want to read');
+insert into bookshelves (name, description) values ('Currently Reading', 'A list of books I am currently reading');
+insert into bookshelves (name, description) values ('Already Read', 'A list of books I have finished reading');
