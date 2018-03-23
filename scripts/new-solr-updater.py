@@ -4,6 +4,7 @@ Author: Anand Chitipothu
 
 Changes:
 2013-02-25: First version
+2018-02-11: Use newer config method
 """
 
 import _init_path
@@ -21,7 +22,8 @@ import re
 import socket
 
 from openlibrary.solr import update_work
-from openlibrary import config
+from openlibrary.config import load_config
+from infogami import config
 
 logger = logging.getLogger("openlibrary.solr-updater")
 
@@ -39,13 +41,6 @@ def parse_arguments():
     parser.add_argument('--no-commit', dest="commit", action="store_false", default=True)
     parser.add_argument('--monkeypatch', action='store_true', default=False, help='Monkey patch solr updater to make it run faster.')
     return parser.parse_args()
-
-def load_config(path):
-    logger.info("loading config from %s", path)
-    print "***load_config", path
-    config.load(path)
-    config.load_config(path)
-    return config.runtime_config
 
 def read_state_file(path):
     try:
@@ -156,7 +151,7 @@ def is_allowed_itemid(identifier):
         return False
 
     # items starts with these prefixes are not books. Ignore them.
-    ignore_prefixes = config.runtime_config.get("ia_ignore_prefixes", [])
+    ignore_prefixes = config.get("ia_ignore_prefixes", [])
     for prefix in ignore_prefixes:
         if identifier.startswith(prefix):
             return False
@@ -168,14 +163,13 @@ def update_keys(keys):
     keys = (k for k in keys if k.count("/") == 2 and k.split("/")[1] in ["books", "authors", "works"])
     update_work.clear_monkeypatch_cache(max_size=10000)
     print str(args)
-    update_work.load_configs(args.ol_url,args.config,'default')
+    update_work.load_configs(args.ol_url, args.config, 'default')
 
     count = 0
     for chunk in web.group(keys, 100):
         chunk = list(chunk)
         count += len(chunk)
         update_work.do_updates(chunk)
-    #    update_work.update_keys(chunk, commit=False)
 
     if count:
         logger.info("updated %d documents", count)
@@ -241,13 +235,13 @@ def main():
         update_work.set_query_host(host)
 
     print str(args)
-    logger.info("loading config")
-    config = load_config(args.config)
+    logger.info("loading config from %s", args.config)
+    load_config(args.config)
 
     state_file = args.state_file
     offset = read_state_file(state_file)
 
-    logfile = InfobaseLog(config['infobase_server'])
+    logfile = InfobaseLog(config.get('infobase_server'))
     logfile.seek(offset)
 
     solr = Solr()
@@ -263,11 +257,9 @@ def main():
             f.write(offset)
 
         if COMMIT:
-            logger.info("solr commit")
             solr.commit(ndocs=count)
         else:
             logger.info("not doing solr commit as commit is off")
-
 
         # don't sleep after committing some records.
         # While the commit was on, some more edits might have happened.

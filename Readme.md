@@ -119,8 +119,7 @@ Integration tests use the Splinter webdriver with Google Chrome. For instruction
 
 ## Contributing
 
-We'd love your help! Choose a bug from our project board:
-https://github.com/internetarchive/openlibrary/projects/1
+[Check out our contributor's guide](CONTRIBUTING.md) to learn how you can contribute!
 
 ## License
 

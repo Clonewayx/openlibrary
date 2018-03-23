@@ -1,12 +1,16 @@
 $def with (page)
 
-$# caution, redirect has no get!
+$ announcement = 'Is Open Library useful to you? Chip in to keep it growing. Your gift will be matched today! &nbsp; <a href="https://archive.org/donate?platform=ol" data-ol-link-track="AnnouncementsBar|DonateButton" class="btn primary">Donate</a>' 
+
 $if 'v2' in page:
   <body>
     <span id="top"></span>
     $:render_template("site/alert")
     $:render_template("lib/nav_head", None)
     <div id="test-body-mobile">
+      <div class="page-banner page-banner-body">
+        $:announcement
+      </div>
       $:page
     </div>
 
@@ -35,6 +39,10 @@ $else:
             </div>
             <div id="contentMsg">
               <div class="alert attn"><span></span></div>
+            </div>
+
+            <div class="page-banner page-banner-body">
+              $:announcement
             </div>
 
             $:page
